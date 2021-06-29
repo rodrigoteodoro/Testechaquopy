@@ -13,6 +13,8 @@ import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
 import com.example.testechaquopy.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -88,7 +90,7 @@ class MainActivity : AppCompatActivity() {
                 Python.start(AndroidPlatform(applicationContext))
                 val py = Python.getInstance()
 
-                val opcao = 4
+                val opcao = 5
 
                 if (opcao == 0) {
                     val mdesconto = py.getModule("regras")
@@ -140,6 +142,26 @@ class MainActivity : AppCompatActivity() {
                             throw java.lang.Exception("Arquivo de regras não existe")
                         }
                     }
+                }
+                if (opcao == 5) {
+                    val mdesconto = py.getModule("regras")
+                    mdesconto.put("gui_getdesconto", ::getDesconto)
+                    val obj = JSONObject()
+                    val ped = JSONObject()
+                    val itens = JSONArray()
+                    for (i in 1..5) {
+                        val itt = JSONObject()
+                        itt.put("codigo", i)
+                        itt.put("quantidade", 10)
+                        itt.put("valor", 50)
+                        itens.put(itt)
+                    }
+                    ped.put("codigo", 1)
+                    ped.put("valor", 50)
+                    ped.put("itens", itens)
+                    obj.put("pedido", ped)
+                    val valor = mdesconto.callAttr("valorTotal", obj.toString()).toInt()
+                    Log.d(TAG, valor.toString())
                 }
             }
         } catch (e: Exception) {
